@@ -1,2 +1,2 @@
-# SQL
+# PLSQL
 Prácticas de SQL
