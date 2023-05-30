@@ -1,0 +1,592 @@
+# SQL
+
+1. Introducción y estructuras de control.
+    
+    1.1. Hola mundo
+    
+- - Primero debemos introducir el begin y el end; , que dentro de estos es donde
+-- se va a ejecutar el código
+
+```
+	BEGIN
+		DBMS_OUTPUT.PUT_LINE('hola mundo'); -- esto es el console write line
+	END;
+
+1.2. variables
+
+	DECLARE
+		nombre VARCHAR2(50) := 'clase';
+
+```
+
+- - Para usar variables hay que usar la palabra Declare
+-- Es al contrario que c#, primero el nombre de la variable y luego el tipo de dato
+-- con los := se le asigna un valor a dicha variable
+
+```
+	BEGIN
+
+		DBMS_OUTPUT.PUT_LINE('hola ' || nombre);
+
+```
+
+- - || equivalente al + a la hora de concatenar cadenas
+
+```
+	END;
+
+1.3 Exception
+
+```
+
+- - Exception se usa para el tratamiento de errores
+
+```sql
+CREATE OR REPLACE PROCEDURE sumar(numero1 INTEGER, numero2 INTEGER)
+IS
+cuidaito EXCEPTION;
+limite INTEGER := 7;
+resultado INTEGER := numero1 + numero2;
+PRAGMA exception_init(cuidaito, -69);
+BEGIN
+DBMS_OUTPUT.PUT_LINE(resultado);
+IF resultado > limite THEN
+RAISE cuidaito;
+END IF;
+EXCEPTION
+WHEN cuidaito THEN
+DBMS_OUTPUT.PUT_LINE('Te pasastes');
+END;
+/
+EXECUTE sumar(3, 6);
+```
+
+```
+1.4 Estructuras de control
+
+	1.4.1 IF
+
+```
+
+- - if, else...
+
+```
+		DECLARE
+			n INTEGER := 5;
+		BEGIN
+
+```
+
+- - El if funciona prácticamente igual, en vez de {} para delimitarlo, usaremos:
+- - IF algo THEN
+--	cosas
+-- END IF;
+
+```sql
+			IF n > 7 THEN
+				DBMS_OUTPUT.PUT_LINE(n ||' es mayor que 7');
+			ELSE
+				IF n < 3 THEN
+					DBMS_OUTPUT.PUT_LINE(n ||' es menor que 3');
+				ELSE
+					DBMS_OUTPUT.PUT_LINE(n || ' es mayor que 3');
+				END IF;
+			END IF;
+		END;
+
+```
+
+- - No hay que cerrar el else puesto que es una alternativa al bloque if
+
+```sql
+	1.4.2 ELSIF
+
+		DECLARE
+			n INTEGER := 1;
+		BEGIN
+
+```
+
+- - El ELSIF no hace falta que lo cerremos, solo tenemos que cerrar el primer IF
+
+```sql
+			IF n > 2 THEN
+				DBMS_OUTPUT.PUT_LINE(n ||' es mayor que 2');
+			ELSIF n < 3 THEN
+					DBMS_OUTPUT.PUT_LINE(n ||' es 0 o 1');
+			ELSE
+				DBMS_OUTPUT.PUT_LINE(n || ' es negativo');
+			END IF;
+		END;
+
+	1.4.3 SWITCH CASE Y MODULO --> RESTO
+
+		SELECT * FROM dual; -- se usa para hacer cosas que no van hacia ninguna tabla en concreto
+		SELECT 2+2 FROM dual;
+		SELECT MOD(2,2) FROM DUAL; -- Esto es para poner el modulo de una division
+
+		DECLARE
+			i INTEGER := 25;
+
+		BEGIN
+
+			CASE -- ESTE ES NUESTRO SWITCH
+
+				WHEN MOD(i, 3) = 0 AND MOD (i, 5) = 0 THEN
+					DBMS_OUTPUT.PUT_LINE(i || ' es mmultiplo de 3 y 5');
+				WHEN MOD(i, 3) = 0 THEN
+					DBMS_OUTPUT.PUT_LINE(i || ' es mmultiplo de 3');
+				WHEN MOD (i, 5) = 0 THEN
+					DBMS_OUTPUT.PUT_LINE(i || ' es mmultiplo de 5');
+				ELSE	-- Este es nuestro default
+					DBMS_OUTPUT.PUT_LINE(i || ' No es multiplo de 3 o 5');
+
+			END CASE;
+
+		END;
+
+```
+
+1. BUCLES
+    
+    DECLARE
+    i INTEGER := 0;
+    BEGIN
+    
+- - Numeros del 1 al 10
+-- Son bucles infinitos, pero se deben partir con un break(EXIT)
+
+```
+	LOOP -- Asi se comienza y se terminan TODOS los bucles
+
+		i := i+1;
+		DBMS_OUTPUT.PUT_LINE(i);
+		EXIT WHEN i = 10; -- este es el break
+
+	END LOOP;
+
+END;
+
+2.1 WHILE -- Para este no necesitamos el exit puesto que la confición va arriba
+
+	DECLARE
+		i INTEGER := 0;
+	BEGIN
+		DBMS_OUTPUT.PUT_LINE('WHILE');
+
+		WHILE i < 10
+		LOOP
+
+			i := i+1;
+			DBMS_OUTPUT.PUT_LINE(i);
+
+		END LOOP;
+
+	END;
+
+2.2 FOR
+
+	BEGIN
+		DBMS_OUTPUT.PUT_LINE('FOR');
+
+		FOR i IN 1..10 -- Esto lo que representa son los números del 1 al 10
+		LOOP
+			DBMS_OUTPUT.PUT_LINE(i);
+		END LOOP;
+
+	END;
+
+```
+
+1. Procedimientos -- Son como las funciones void
+    
+    CREATE OR REPLACE PROCEDURE saluda
+    AS
+    BEGIN
+    DBMS_OUTPUT.PUT_LINE('HOLA');
+    END;
+    
+- - Cuando se ejecute se crea el procedimiento y está disponible en la base de datos para usarlo
+-- Para usar un procedimiento, es como una finción, hay que poner el nombre y los ()
+
+```
+EXECUTE saluda();
+
+-- Hay que tener en cuenta que hay que ejecutarlo solo, es decir, tenemos que indicarle que pare de compilarlo
+
+CREATE OR REPLACE PROCEDURE saluda
+AS
+BEGIN
+	DBMS_OUTPUT.PUT_LINE('HOLA');
+END;
+
+/
+
+```
+
+- - ESTA BARRA INDICA QUE SE PARA DE COMPILAR EL PROCESO(FUNCION) Y COMIENZA LO SIGUIENTE
+
+```
+EXECUTE saluda();
+
+3.1 Pasarle argumentos a los Procedimientos
+
+```
+
+- - A los argumentos no se le pone el tamaño al tipo de dato pq es algo que viene de fuera
+
+```
+	**CREATE OR REPLACE PROCEDURE saluda(nombre VARCHAR)
+	AS
+	BEGIN
+		DBMS_OUTPUT.PUT_LINE('HOLA ' || nombre );
+	END;
+	/
+	EXECUTE saluda('Lucas');**
+
+3.2 Crear variables dentro del procedimiento
+
+	CREATE OR REPLACE PROCEDURE saluda(nombre VARCHAR)
+	IS
+
+```
+
+- - Se cambia el as por is para declarar las variables
+mensaje VARCHAR(255);
+BEGIN
+mensaje := 'HOLA ' || nombre ;
+DBMS_OUTPUT.PUT_LINE(mensaje);
+END;
+/
+EXECUTE saluda('Lucas Ruiz Zapata');
+1. Funciones
+--Funcionan igual que los procedimientos pero la sintaxis y el uso son distintos
+    
+    CREATE OR REPLACE FUNCTION saludar(nombre VARCHAR)
+    RETURN VARCHAR
+    -- Las funciones te piden el tipo de dato a devolver y tampoco se le asigna tamaño
+    IS
+    mensaje VARCHAR(255);
+    BEGIN
+    mensaje := 'HOLA ' || nombre ;
+    RETURN mensaje;
+    END saludar;
+    -- Aqui se indica que acaba la función
+    /
+    -- En vez de EXECUTE, se usa un SELECT a la tabla DUAL
+    
+    SELECT saludar('Lucas Ruiz Zapata') FROM DUAL;
+    
+- - Al ser un select se le pueden hacer las cosas propias de los select
+
+```
+SELECT saludar('Lucas Ruiz Zapata') AS Saludo FROM DUAL;
+
+4.1 Sin parámetros ni variables
+
+	CREATE OR REPLACE FUNCTION hola_mundo
+	RETURN VARCHAR
+	AS
+
+```
+
+- - Al no estar usando variables se le pone el AS
+BEGIN
+RETURN 'Hola mundo';
+END hola_mundo;
+/
+
+```
+	SELECT hola_mundo() as saludo FROM DUAL;
+
+4.2 Ejecutar + de 1 función
+
+	CREATE OR REPLACE FUNCTION hola_mundo
+	RETURN VARCHAR
+	AS
+	BEGIN
+		RETURN 'Hola mundo';
+	END hola_mundo;
+	/
+
+	SELECT saludar('Lucas Ruiz') as saludo, hola_mundo FROM DUAL;
+
+	4.2.1 Ejecutar + 1 funcion como PROCEDIMIENTO
+
+		CREATE OR REPLACE PROCEDURE saludo_panas(nombre VARCHAR)
+		IS
+			mensaje VARCHAR(255);
+		BEGIN
+
+			mensaje := saludar(nombre);
+
+```
+
+- - Se declaran como en cualquier otro lenguaje de programación
+DBMS_OUTPUT.PUT_LINE(mensaje);
+
+```
+		END;
+		/
+
+		EXECUTE saludo_panas('Paco Sanz');
+
+```
+
+1. Consultas y cursores
+- - Es recomendable hacer primero la consulta y luego el requerimiento
+
+```
+SELECT COUNT(*) FROM customer;
+
+```
+
+- - Vamos a hacer una funcion con esta consulta
+
+```
+CREATE OR REPLACE FUNCTION customer_number
+
+```
+
+- - Al no pasarle ningún valor, no tenemos que ponerle los paréntesis
+RETURN INTEGER IS
+numero INTEGER;
+BEGIN
+
+```
+	SELECT COUNT(*) INTO numero
+
+```
+
+- - Al decirle into y el nombre de la variable lo que se le dice es que el valor del select lo estamos volcando en la variable
+FROM customer;
+
+```
+	RETURN numero;
+
+END customer_number;
+/
+
+SELECT customer_number FROM dual;
+
+```
+
+- - Recordar que con la tabla dual es con la que recibimos cosas
+
+```
+5.1 CURSORES
+
+```
+
+- - Vamos a hacer un procedimiento que devuelva una coleccion de valores y esto significa que no podremos usar la palabra clave INTO
+
+```
+	SELECT name FROM customer;
+
+```
+
+- - Un cursor es un tipo de dato que nos permite guardar las consultas
+
+```
+	CREATE OR REPLACE PROCEDURE list_customer_name
+	IS
+		CURSOR c IS
+			SELECT name
+			FROM customer;
+
+```
+
+- - Dentro del cursor es donde se indica la consulta que queremos hacer
+
+```
+		name VARCHAR(255);
+
+```
+
+- - La consulta la deberemos volcar en una variable para que esta se pueda mostrar
+
+```
+	BEGIN
+
+		OPEN c;
+			LOOP
+				FETCH c INTO name;
+				EXIT WHEN c%NOTFOUND;
+
+```
+
+- - Tenemos que indicar cuando nos salimos del loop, es decir, cuando el cursor no tenga datos
+
+```
+				DBMS_OUTPUT.PUT_LINE(name);
+			END LOOP;
+		CLOSE c;
+
+```
+
+- - Para recorrer la consulta debemos usar bucles y se tratarían como ficheros, de forma que tendriamos que abrirlos y cerrarlos
+
+```
+	END;
+	/
+
+	EXECUTE list_customer_name();
+
+5.2 CURSORES ACTUALIZADOS
+
+```
+
+- - Vamos a usar bucles FOR para crearlos, esto hace que la sintaxis sea más sencilla
+
+```
+	CREATE OR REPLACE PROCEDURE list_customer_name
+	IS
+		CURSOR c IS
+			SELECT name
+			FROM customer;
+
+	BEGIN
+
+		FOR fila IN c
+		LOOP
+			DBMS_OUTPUT.PUT_LINE(fila.name);
+		END LOOP;
+
+	END;
+	/
+
+	EXECUTE list_customer_name();
+```
+
+- - Los triggers son eventos que provocan la ejecucion de codigo y pueden ocurrir a distintos niveles
+
+CREATE TABLE alumno
+(
+id_alumno INTEGER,
+nombre VARCHAR2(50),
+fecha_nacimiento DATE
+);
+
+CREATE TABLE auditoria
+(
+id_auditoria INTEGER,
+nombre_tabla VARCHAR(255),
+nombre_operacion VARCHAR(10)
+);
+
+1. Trigger y SEQUENCE
+
+CREATE SEQUENCE seq_auditoria INCREMENT BY 1;
+-- Esto es para crear la secuencia y esto lo que hace es incrementarnos el valor seq_auditoria en 1 siempre que se use
+
+CREATE OR REPLACE TRIGGER on_update_alumno
+BEFORE UPDATE ON alumno
+FOR EACH ROW
+
+- - Por cada vez que se actualice la tabla alumno, ejecuta el siguiente codigo
+
+BEGIN
+
+- - Tenemos que usar una secuencia a la hora de introducir los datos para que estos no se repitan
+INSERT INTO auditoria VALUES(seq_auditoria.nextval, 'alumno', 'UPDATE');
+-- Le introduce el siguiente valor de la tabla auditoria al id
+END;
+
+INSERT INTO alumno VALUES(1, 'DAVID', TO_DATE('27-12-1994', 'dd-mm-yyyy'));
+INSERT INTO alumno VALUES(2, 'LUCAS', TO_DATE('25-02-2002', 'dd-mm-yyyy'));
+INSERT INTO alumno VALUES(3, 'JAVI', TO_DATE('23-04-1998', 'dd-mm-yyyy'));
+INSERT INTO alumno VALUES(4, 'ELADIO', TO_DATE('13-07-2001', 'dd-mm-yyyy'));
+INSERT INTO alumno VALUES(5, 'JUAN', TO_DATE('06-12-2000', 'dd-mm-yyyy'));
+
+- - Vamos a cambiar uno de los valores de los insert
+
+SELECT * FROM auditoria;
+
+UPDATE alumno
+SET nombre = 'Paco Sanz'
+WHERE id_alumno = 3;
+
+- - Con esto comprobaríamos que se han introducido los datos automáticamente
+
+SELECT * FROM auditoria;
+
+1. Trigger con USER Y SYSDATE
+- - Ahora vamos a hacer el ejercicio entero
+
+CREATE TABLE alumno
+(
+id_alumno INTEGER,
+nombre VARCHAR2(50),
+fecha_nacimiento DATE
+);
+
+CREATE TABLE auditoria
+(
+id_auditoria INTEGER,
+nombre_tabla VARCHAR(255),
+nombre_operacion VARCHAR(10),
+operador VARCHAR2(30),
+fecha_transaccion DATE
+);
+
+- - Usaremos la tabla dual para sacar las variables operador y fecha_transaccion
+
+SELECT USER, SYSDATE FROM DUAL;
+
+CREATE SEQUENCE seq_auditoria INCREMENT BY 1;
+CREATE OR REPLACE TRIGGER on_update_alumno
+BEFORE UPDATE ON alumno
+FOR EACH ROW
+BEGIN
+INSERT INTO auditoria VALUES(seq_auditoria.nextval, 'alumno', 'UPDATE', USER, SYSDATE);
+-- Los valores USER y SYSDATE, estan en el sistema declarados, por tanto, no necesitamos declararlos nosotros
+END;
+
+1. Tabla customer
+
+CREATE TABLE customer (
+id INTEGER NOT NULL PRIMARY KEY,
+name VARCHAR2(255) NOT NULL,
+age INTEGER,
+address VARCHAR2(255),
+salary NUMBER(7,2)
+);
+
+INSERT INTO customer VALUES(1, 'PACO', 23, 'ALGUNA', 2000);
+INSERT INTO customer VALUES(2, 'ANTONIO', 19, 'OTRA', 1100);
+INSERT INTO customer VALUES(3, 'JOSE LUIS', 55, 'OTRA +', 2200);
+INSERT INTO customer VALUES(4, 'JUAN', 33, 'IMAGINA', 2400);
+INSERT INTO customer VALUES(5, 'LUCAS', 20, 'MI CASA', 2222);
+INSERT INTO customer VALUES(6, 'ELADIO', 18, 'SU CASA', 1880);
+INSERT INTO customer VALUES(7, 'JESUS', 66, 'AQUELLA CASA', 1700);
+
+- - NOS IMPRIME POR PANTALLA LA MODIFICACIÓN DEL SALARIO
+
+CREATE OR REPLACE TRIGGER on_update_salario
+BEFORE UPDATE ON customer
+FOR EACH ROW
+-- si nos dejan elegir, before mejor
+
+BEGIN
+
+```
+--:NEW
+
+```
+
+- - REGISTRO CON LOS NUEVOS VALORES
+DBMS_OUTPUT.PUT_LINE('SALARIO ANTERIOR: ' || :NEW.salary);
+
+```
+--:OLD
+
+```
+
+- - REGISTRO CON LOS VIEJOS VALORES
+DBMS_OUTPUT.PUT_LINE('SALARIO ACTUALIZADO:' || :OLD.salary);
+
+END;
+
+UPDATE customer
+SET SALARY = 3000
+WHERE id = 1;
